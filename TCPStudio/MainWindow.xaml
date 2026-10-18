@@ -1,0 +1,10 @@
+<shell:ShellWindowBase x:Class="TCPStudio.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:shell="clr-namespace:WPF.Web;assembly=WPF.Web"
+        mc:Ignorable="d"
+        Title="TCPStudio" Height="600" Icon="/Assets/icon.ico" Width="1000"
+        MinHeight="600" MinWidth="1000" WindowStartupLocation="CenterScreen">
+</shell:ShellWindowBase>

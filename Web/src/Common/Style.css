@@ -1,0 +1,554 @@
+body,
+html,
+#root {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    user-select: none;
+}
+
+/* WPF 桌面场景基准字号：对齐 WPF 默认 12px */
+html,
+body {
+    font-size: 12px;
+}
+
+/* Semi 组件默认按 Web 14px 设计，这里统一压到桌面 12px；标题类 13px */
+.semi-button,
+.semi-input,
+.semi-input-number,
+.semi-select,
+.semi-select-selection,
+.semi-textarea,
+.semi-form-field-label,
+.semi-dropdown-item,
+.semi-modal-body,
+.semi-empty-title,
+.semi-typography {
+    font-size: 12px;
+}
+
+/* Semi 侧为 .semi-tabs-bar .semi-tabs-tab（双类），单类覆盖优先级不足，这里需多一层 */
+.semi-tabs .semi-tabs-bar .semi-tabs-tab {
+    font-size: 12px;
+    line-height: 18px;
+}
+
+.semi-modal-title,
+.semi-typography-h5,
+h5.semi-typography {
+    font-size: 13px;
+}
+
+/* 图标随字号缩小，避免 12px 文字配 24px 图标 */
+.semi-button .semi-icon,
+.semi-dropdown-item .semi-icon,
+.semi-modal-title .semi-icon,
+.semi-tabs .semi-tabs-bar .semi-tabs-tab .semi-icon {
+    font-size: 14px;
+}
+
+#root {
+    background: #272727;
+}
+
+
+.layout {
+    height: 100%
+}
+
+.contentPage {
+    padding: 0;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: auto;
+    color: var(--semi-color-text-0);
+    Scroll-behavior: smooth;
+}
+
+.contentPage.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.semi-form .semi-form-field-error-message>span>svg {
+    height: 12px;
+    width: 12px;
+}
+
+.semi-form .semi-form-field {
+    padding-top: 0 !important;
+    padding-bottom: 8px !important;
+}
+
+.semi-form .semi-form-field-main {
+    position: relative;
+}
+
+.semi-form .semi-form-field-error-message {
+    position: absolute;
+    z-index: 999;
+    top: 2.5px;
+    left: 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    padding: 0px 4px;
+    color: rgba(var(--semi-pink-8), 1);
+    pointer-events: none;
+}
+
+.semi-form .semi-form-field-error-message>span {
+    margin-right: 2px;
+    top: 3px;
+}
+
+/* 校验失败时错误提示叠在组件内部，隐藏默认 placeholder 避免文字重叠 */
+.semi-form .semi-form-field-main:has(.semi-form-field-error-message) .semi-input::placeholder,
+.semi-form .semi-form-field-main:has(.semi-form-field-error-message) .semi-input-number input::placeholder {
+    color: transparent;
+}
+
+/* ===== 主布局：左连接管理 / 右工作台 ===== */
+.mainLayout {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.mainLayoutLeft {
+    width: 220px;
+    height: 100%;
+    border-right: 1px solid var(--semi-color-border);
+    background: var(--semi-color-bg-1);
+    overflow: hidden;
+}
+
+.mainLayoutRight {
+    flex: 1;
+    height: 100%;
+    overflow: auto;
+    background: var(--semi-color-bg-0);
+}
+
+.workPanelPlaceholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--semi-color-text-2);
+}
+
+/* ===== 连接面板 ===== */
+.connPanel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.connPanelHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--semi-color-border);
+}
+
+.connPanelTitle {
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.connPanelBody {
+    flex: 1;
+    overflow: auto;
+    padding: 6px;
+}
+
+.connItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 2px;
+    transition: background 0.15s;
+}
+
+.connItem:hover {
+    background: var(--semi-color-fill-0);
+}
+
+.connItem.selected {
+    background: var(--semi-color-primary-light-default);
+    outline: 1px solid var(--semi-color-primary-light-active);
+}
+
+.connItemMain {
+    flex: 1;
+    min-width: 0;
+}
+
+.connItemTitle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.connItemName {
+    flex: 1;
+    min-width: 0;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.connItemAddr {
+    display: block;
+    margin-top: 1px;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--semi-color-text-2);
+}
+
+.connItemOps {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+/* ===== 工作台 ===== */
+.workbench {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 8px 10px;
+    box-sizing: border-box;
+}
+
+.workbenchHead {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.workbenchTitle {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.workbenchSub {
+    color: var(--semi-color-text-3);
+    font-size: 12px;
+}
+
+.toolLabel {
+    color: var(--semi-color-text-2);
+    font-size: 12px;
+}
+
+.workbench .semi-tabs-bar {
+    margin-bottom: 6px;
+}
+
+.tabPane {
+    padding-top: 4px;
+}
+
+.liveToolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    gap: 8px;
+}
+
+/* 实时页签高度链路：Tabs 撟满剩余空间，数据区跟随加高，发送区贴底 */
+.workbench .semi-tabs {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.workbench .semi-tabs-content {
+    flex: 1;
+    min-height: 0;
+}
+
+.workbench .semi-tabs-pane {
+    height: 100%;
+}
+
+/* Semi 在 pane 内还包了一层动画容器，需一并撑高，否则子级 height:100% 解析为 0 */
+.workbench .semi-tabs-pane .semi-tabs-pane-motion-overlay {
+    height: 100%;
+}
+
+.livePane {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* 实时收发区：垂直滚动条常显，避免数据增减时宽度抖动；flex:1 随窗口加高 */
+.liveArea {
+    flex: 1;
+    min-height: 200px;
+    overflow-x: auto;
+    overflow-y: scroll;
+    background: var(--semi-color-fill-0);
+    border: 1px solid var(--semi-color-border);
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 12px;
+}
+
+/* 数据条目：两行结构（收发 Tag + 时间 / 数据内容） */
+.liveLine {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    line-height: 18px;
+    padding: 2px 0;
+}
+
+.liveLine + .liveLine {
+    margin-top: 2px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--semi-color-border);
+}
+
+.liveMeta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.liveTime {
+    color: var(--semi-color-text-2);
+    flex-shrink: 0;
+}
+
+.liveText {
+    min-width: 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+    /* 全局禁选，但报文内容需可框选复制 */
+    user-select: text;
+    cursor: text;
+}
+
+/* 发送栏：贴底不被压缩 */
+.sendBar {
+    margin-top: 8px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sendInput {
+    width: 100%;
+    box-sizing: border-box;
+    height: 76px; /* 固定高度，禁止拖拽调整 */
+    resize: none;
+    background: var(--semi-color-bg-1);
+    border: 1px solid var(--semi-color-border);
+    border-radius: 4px;
+    color: var(--semi-color-text-0);
+    font-size: 12px;
+    font-family: Consolas, 'Courier New', monospace;
+    padding: 6px 8px;
+    outline: none;
+}
+
+.sendInput:focus {
+    border-color: var(--semi-color-primary);
+}
+
+.sendOps {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.recordText {
+    font-family: Consolas, 'Courier New', monospace;
+    max-width: 100%;
+}
+
+/* 记录列表（行式，避免 Semi Table 在 React19 下的更新循环） */
+.recordList {
+    border: 1px solid var(--semi-color-border);
+    border-radius: 4px;
+    overflow: auto;
+    max-height: calc(100vh - 300px);
+    font-size: 12px;
+}
+
+.recordRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--semi-color-border);
+    font-family: Consolas, 'Courier New', monospace;
+}
+
+.recordRow:hover {
+    background: var(--semi-color-fill-0);
+}
+
+.recordDir {
+    width: 32px;
+    flex-shrink: 0;
+}
+
+.recordDir.send {
+    color: var(--semi-color-primary);
+}
+
+.recordDir.recv {
+    color: var(--semi-color-success);
+}
+
+.recordEnc {
+    width: 48px;
+    flex-shrink: 0;
+    color: var(--semi-color-text-2);
+}
+
+.recordLen {
+    width: 40px;
+    flex-shrink: 0;
+    color: var(--semi-color-text-2);
+}
+
+.recordRow .recordText {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.recordPager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 6px 0;
+}
+
+/* 预设列表：页签内独立滚动区，垂直滚动条常显与数据区一致 */
+.presetList {
+    flex: 1;
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: scroll;
+    border: 1px solid var(--semi-color-border);
+    border-radius: 4px;
+    background: var(--semi-color-bg-1);
+}
+
+/* 预设项 */
+.presetItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--semi-color-border);
+    gap: 8px;
+}
+
+.presetMain {
+    flex: 1;
+    min-width: 0;
+}
+
+.presetContent {
+    font-family: Consolas, 'Courier New', monospace;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+
+.semi-table-header::-webkit-scrollbar-track {
+    background-color: var(--semi-color-bg-1);
+    border-bottom: 2px solid var(--semi-color-border);
+}
+
+/* 整个滚动条 */
+::-webkit-scrollbar {
+    width: 14px;
+    /* 滚动条宽度 */
+    height: 14px;
+    /* 滚动条高度 */
+}
+
+/* 滚动条轨道 */
+::-webkit-scrollbar-track {
+    background: #2b2c31;
+    /* 轨道背景颜色 */
+    border-radius: 0px;
+}
+
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+    background-color: #555;
+    /* 滑块颜色 */
+    border-radius: 6px;
+    /* 滑块圆角 */
+    border: 2px solid #2b2c31;
+    /* 滑块边缘颜色 */
+}
+
+/* 滚动条滑块（当鼠标悬停在滑块上） */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #556;
+    /* 滑块悬停颜色 */
+}
+
+
+/* 默认按钮尺寸对齐 Windows 标准：
+   Semi 按钮为固定高度+垂直居中，padding-block 无效，上下密度通过 height 调整；
+   仅处理非 borderless 的默认按钮，不动图标型 borderless 按钮 */
+.semi-button:not(.semi-button-borderless) {
+    height: 30px !important;
+    line-height: 22px !important;
+    padding: 0px 0px !important;
+    padding-inline: 8px !important;
+}
+
+.semi-button .semi-button-content-right {
+    margin-left: 4px !important;
+}
+
+.semi-modal .semi-modal-content {
+    padding: 0 20px;
+}
+
+.semi-modal .semi-modal-header {
+    margin: 18px 0;
+}
+
+.semi-modal .semi-modal-footer {
+    margin: 10px 0 18px 0;
+}
+.semi-modal .semi-modal-footer button{
+    height: 32px !important;
+    line-height: 22px !important;
+    padding: 0px 0px !important;
+    padding-inline: 14px !important;
+}

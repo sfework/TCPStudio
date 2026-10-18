@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="TCPStudio/TCPStudio.csproj" />
+  <Project Path="TcpTestServer/TcpTestServer.csproj" />
+  <Project Path="WPF.Web/WPF.Web.csproj" />
+  <Project Path="Web/Web.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+</Solution>
