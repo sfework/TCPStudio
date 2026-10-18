@@ -84,8 +84,95 @@
                                     </StackPanel>
                                 </DockPanel>
                             </Grid>
-                            <Grid Grid.Row="1" Background="#272727">
-                                <wv2:WebView2 Name="Web" DefaultBackgroundColor="#272727" Margin="4,0,4,4" />
+                            <Grid x:Name="WebRoot" Grid.Row="1" Background="#272727">
+                                <!-- 加载期 WebView2 以负 Margin 停放到客户区外（子 HWND 被主窗口裁剪不可见），
+                                     避免 airspace 遮挡壳侧动画；首次导航完成后由代码恢复 Margin -->
+                                <wv2:WebView2 Name="Web" DefaultBackgroundColor="#272727" Margin="-20000,0,0,0" />
+                                <!-- 壳侧加载动画：WebView2 停靠区外期间正常显示，导航完成后由代码隐藏 -->
+                                <Border Name="loading" Background="#272727">
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <!-- 双环对旋 + 中心呼吸点：配色取窗口主色（深色底 + 品牌蓝） -->
+                                        <Grid Width="52" Height="52">
+                                            <!-- 外环：270° 蓝色渐变弧，顺时针 -->
+                                            <Path Width="52" Height="52" StrokeThickness="3"
+                                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                  Data="M 26,3 A 23,23 0 1 1 3,26"
+                                                  RenderTransformOrigin="0.5,0.5">
+                                                <Path.Stroke>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                        <GradientStop Color="#4CC2FF" Offset="0" />
+                                                        <GradientStop Color="#2E6DA4" Offset="0.55" />
+                                                        <GradientStop Color="#1B3A5C" Offset="1" />
+                                                    </LinearGradientBrush>
+                                                </Path.Stroke>
+                                                <Path.RenderTransform>
+                                                    <RotateTransform Angle="0" />
+                                                </Path.RenderTransform>
+                                                <Path.Triggers>
+                                                    <EventTrigger RoutedEvent="Loaded">
+                                                        <BeginStoryboard>
+                                                            <Storyboard RepeatBehavior="Forever">
+                                                                <DoubleAnimation Storyboard.TargetProperty="(Path.RenderTransform).(RotateTransform.Angle)"
+                                                                                 From="0" To="360" Duration="0:0:1.5" />
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                </Path.Triggers>
+                                            </Path>
+                                            <!-- 内环：180° 灰弧，逆时针，与外环反向形成张力 -->
+                                            <Path Width="34" Height="34" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                  Stroke="#5A6068" StrokeThickness="2.5"
+                                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                  Data="M 17,3.5 A 13.5,13.5 0 0 1 17,30.5"
+                                                  RenderTransformOrigin="0.5,0.5">
+                                                <Path.RenderTransform>
+                                                    <RotateTransform Angle="0" />
+                                                </Path.RenderTransform>
+                                                <Path.Triggers>
+                                                    <EventTrigger RoutedEvent="Loaded">
+                                                        <BeginStoryboard>
+                                                            <Storyboard RepeatBehavior="Forever">
+                                                                <DoubleAnimation Storyboard.TargetProperty="(Path.RenderTransform).(RotateTransform.Angle)"
+                                                                                 From="360" To="0" Duration="0:0:1" />
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                </Path.Triggers>
+                                            </Path>
+                                            <!-- 中心呼吸点 -->
+                                            <Ellipse Width="6" Height="6" Fill="#4CC2FF"
+                                                     HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Ellipse.Triggers>
+                                                    <EventTrigger RoutedEvent="Loaded">
+                                                        <BeginStoryboard>
+                                                            <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                                 From="0.2" To="1" Duration="0:0:0.65" />
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                </Ellipse.Triggers>
+                                            </Ellipse>
+                                        </Grid>
+                                        <!-- 标题与呼吸文案 -->
+                                        <TextBlock Margin="0,16,0,0" FontSize="13" FontWeight="Medium"
+                                                   Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                   Foreground="#DEDEDE" HorizontalAlignment="Center" />
+                                        <TextBlock Margin="0,4,0,0" Text="正在加载…" FontSize="12"
+                                                   Foreground="#A2A7AE" HorizontalAlignment="Center">
+                                            <TextBlock.Triggers>
+                                                <EventTrigger RoutedEvent="Loaded">
+                                                    <BeginStoryboard>
+                                                        <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                             From="0.35" To="1" Duration="0:0:0.9" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                            </TextBlock.Triggers>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
                             </Grid>
                         </Grid>
                     </AdornerDecorator>

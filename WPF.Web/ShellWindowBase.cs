@@ -1,6 +1,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using WPF.Web.Common;
@@ -15,11 +16,30 @@ namespace WPF.Web
     /// </summary>
     public class ShellWindowBase : Window
     {
+        // WebView2 环境预热任务：进程启动即创建浏览器环境（与 WPF 首帧渲染并行），
+        // 窗口 Loaded 时复用，节省 EnsureCoreWebView2Async 的数百毫秒冷启动耗时
+        private static Task<CoreWebView2Environment>? _prewarmEnv;
+
         static ShellWindowBase()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
                 typeof(ShellWindowBase),
                 new FrameworkPropertyMetadata(typeof(ShellWindowBase)));
+        }
+
+        /// <summary>
+        /// 预热 WebView2 环境：在 App.OnStartup 尽早调用，与窗口构造/布局并行，
+        /// 首个窗口 OnShellLoaded 时直接复用已建好的环境，显著缩短启动白屏时间。
+        /// 重复调用安全（幂等）。
+        /// </summary>
+        public static void PreWarmWebView2()
+        {
+            _prewarmEnv ??= CoreWebView2Environment.CreateAsync(null, null, new CoreWebView2EnvironmentOptions
+            {
+                // 桌面内嵌场景禁用浏览器后台行为：启动期组件更新/网络预检/域服务列表拉取，
+                // 减少首启联网等待；occluded 降频会导致最小化后推送延迟，一并关闭
+                AdditionalBrowserArguments = "--disable-background-networking --disable-component-update --disable-features=OptimizationHints,MediaRouter --disable-backgrounding-occluded-windows --disable-renderer-backgrounding",
+            });
         }
 
         public ShellWindowBase()
@@ -80,14 +100,42 @@ namespace WPF.Web
         {
             var web = FindWeb();
             if (web == null) return;
-            await web.EnsureCoreWebView2Async();
+            // 复用预热环境；未预热或预热失败则回退默认创建（传 null 即控件自行创建）
+            CoreWebView2Environment? env = null;
+            if (_prewarmEnv != null)
+            {
+                try { env = await _prewarmEnv; }
+                catch { env = null; }
+            }
+            await web.EnsureCoreWebView2Async(env);
             var core = web.CoreWebView2;
             if (core == null) return;
             ConfigureCoreSettings(core);
             RegisterHostObjects(core);
             Bridge.Attach(core, Dispatcher);
+            _web = web;
+            // WebView2 是子 HWND（airspace），加载期以负 Margin 停靠到窗口外（被主窗口裁剪不可见），
+            // 让壳侧加载动画可见；首次导航完成后归位并隐藏动画。
+            // 不能用 Collapsed/Visibility 隐藏——会阻止 HWND 创建导致内核无法初始化
+            core.NavigationCompleted += OnCoreNavigationCompleted;
             web.Source = ResolveSource();
             OnWebViewLoaded(core);
+        }
+
+        private WebView2? _web;
+        private bool _isFirstNavigation = true;
+
+        /// <summary>首次导航完成：WebView2 归位显示，淡出并移除壳侧加载动画。</summary>
+        private void OnCoreNavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
+        {
+            if (!_isFirstNavigation) return;
+            _isFirstNavigation = false;
+            if (_web != null) _web.Margin = new Thickness(4, 0, 4, 4);
+            if (GetTemplateChild("loading") is not Border overlay) return;
+            var fade = new System.Windows.Media.Animation.DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(250));
+            // 注意：不可先 Freeze 再挂 Completed——冻结后 AddEventHandler 会抛 InvalidOperationException
+            fade.Completed += (_, _) => overlay.Visibility = Visibility.Collapsed;
+            overlay.BeginAnimation(UIElement.OpacityProperty, fade);
         }
 
         /// <summary>

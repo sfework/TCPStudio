@@ -10,6 +10,8 @@
     <AssemblyName>TCPStudio</AssemblyName>
     <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+    <!-- 发布时预编译 IL→原生代码：进程启动到窗口显示更快（代价：包体增大） -->
+    <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
 
   <ItemGroup>

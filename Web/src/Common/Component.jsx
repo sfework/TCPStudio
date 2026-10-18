@@ -1,7 +1,5 @@
 import React from 'react'
-import { Button, Form, Table, Pagination, Toast, Dropdown, SplitButtonGroup, Spin, Modal, Typography, Tag } from '@douyinfe/semi-ui';
-import { IconUser, IconTreeTriangleDown } from '@douyinfe/semi-icons';
-import { getGuid } from './Common';
+import { Toast, Spin, Modal } from '@douyinfe/semi-ui';
 
 class ContentPage extends React.Component {
     constructor(props) {
