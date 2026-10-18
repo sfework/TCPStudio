@@ -5,7 +5,7 @@
   "scripts": {
     "web": "cd web && npm run dev",
     "build": "npm run build:wpf && npm run build:web",
-    "build:wpf": "npm run clear && cd TCPStudio && dotnet publish -c Release -r win-x64 -o ..\\Releases",
+    "build:wpf": "npm run clear && cd TCPStudio && dotnet publish -c Release -p:PublishReadyToRun=true -r win-x64 -o ..\\Releases",
     "build:web": "cd web && npm run build",
     "clear": "if exist Releases rmdir /S/Q Releases"
   }
