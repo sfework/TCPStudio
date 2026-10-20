@@ -110,6 +110,13 @@ namespace WPF.Web
             await web.EnsureCoreWebView2Async(env);
             var core = web.CoreWebView2;
             if (core == null) return;
+            core.ContextMenuRequested += (sender, args) =>
+            {
+                // 在 Release 下，彻底吞掉所有右键菜单请求
+            #if !DEBUG
+                args.Handled = true;
+            #endif
+            };
             ConfigureCoreSettings(core);
             RegisterHostObjects(core);
             Bridge.Attach(core, Dispatcher);
@@ -144,18 +151,38 @@ namespace WPF.Web
         protected virtual void ConfigureCoreSettings(CoreWebView2 core)
         {
             var s = core.Settings;
-            s.IsZoomControlEnabled = false;//禁止缩放
-            s.IsPinchZoomEnabled = false;//禁止缩放动作
-            s.IsSwipeNavigationEnabled = false;//禁止水平手势
-            s.IsStatusBarEnabled = Options.DisableDefaultStatusBar;//关闭状态栏
-            s.IsGeneralAutofillEnabled = false;//关闭自动填充
-            s.IsPasswordAutosaveEnabled = false;//关闭密码保存
-            s.AreBrowserAcceleratorKeysEnabled = false;//关闭快捷键
-            s.HiddenPdfToolbarItems = CoreWebView2PdfToolbarItems.None;//关闭PDF工具栏
-            s.AreDefaultContextMenusEnabled = false;//关闭右键菜单
+            // 缩放
+            s.IsZoomControlEnabled = false;
+            s.IsPinchZoomEnabled = false;
+
+            // 手势 / 导航
+            s.IsSwipeNavigationEnabled = false;
+
+            // 状态栏：Options 属性若是 "Disable" 语义，要取反
+            s.IsStatusBarEnabled = false;   // 禁用状态栏（默认 false，避免被前端 JS 误读）
+
+            // 自动填充 & 密码
+            s.IsGeneralAutofillEnabled = false;
+            s.IsPasswordAutosaveEnabled = false;
+
+            // PDF 工具栏：None = 全部显示；要全部隐藏需按位或所有项
+            s.HiddenPdfToolbarItems =
+                CoreWebView2PdfToolbarItems.Save | CoreWebView2PdfToolbarItems.Print
+            | CoreWebView2PdfToolbarItems.SaveAs | CoreWebView2PdfToolbarItems.ZoomIn
+            | CoreWebView2PdfToolbarItems.ZoomOut | CoreWebView2PdfToolbarItems.Rotate
+            | CoreWebView2PdfToolbarItems.FitPage | CoreWebView2PdfToolbarItems.PageLayout
+            | CoreWebView2PdfToolbarItems.Bookmarks | CoreWebView2PdfToolbarItems.PageSelector
+            | CoreWebView2PdfToolbarItems.Search;
+
+            // 右键菜单 / DevTools / 快捷键：按构建配置区分
 #if DEBUG
-            core.Settings.AreBrowserAcceleratorKeysEnabled = true;
-            core.Settings.AreDefaultContextMenusEnabled = true;
+            s.AreBrowserAcceleratorKeysEnabled = true;
+            s.AreDefaultContextMenusEnabled = true;
+            s.AreDevToolsEnabled = true;   // 调试时需要
+#else
+            s.AreBrowserAcceleratorKeysEnabled = false;
+            s.AreDefaultContextMenusEnabled    = false;
+            s.AreDevToolsEnabled               = false;
 #endif
         }
 
